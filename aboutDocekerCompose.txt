@@ -1,0 +1,27 @@
+
+
+Key components and what they define:
+version:
+        Specifies the Docker Compose file format version being used. This determines which features and syntax are available.
+services:
+        This section defines each individual container that makes up your application. For each service, you can specify:
+image: The Docker image to use (e.g., nginx:latest, mysql:8.0).
+
+build: Instructions for building a Docker image from a Dockerfile (e.g., context: ., 
+
+dockerfile: Dockerfile.dev).
+
+ports: Port mappings between the host machine and the container (e.g., "8080:80").
+
+environment: Environment variables to set within the container.
+
+volumes: Mount points for persistent data or sharing files between the host and container.
+
+networks: The networks the service should connect to.
+
+depends_on: Specifies service dependencies, ensuring services start in the correct order.
+
+networks:
+        Defines custom networks for services to communicate over, providing isolation and control over inter-service communication.
+volumes:
+        Declares named volumes for persistent data storage that can be shared and reused across services.
