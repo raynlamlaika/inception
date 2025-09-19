@@ -19,7 +19,7 @@ and also the portability witch is Allows starting, stopping, and rebuilding the 
 
 
 src
-
+```
 inception/
 ├── Makefile
 ├── docker-compose.yml
@@ -42,3 +42,4 @@ inception/
     │   │   │   └── init.sql
     ├── .env            # local env copy for compose context if needed
     └── volumes/        # (optional) bind-mounted folders for persistent data
+```
