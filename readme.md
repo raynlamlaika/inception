@@ -12,3 +12,33 @@ A Docker Compose file, typically named docker-compose.yml, is a YAML-formatted c
 
 the denifits of that is to manage multiple docker app and Simplified management
 and also the portability witch is Allows starting, stopping, and rebuilding the entire application stack with single commands (e.g., docker compose up, docker compose down).
+
+
+
+
+
+
+src
+
+inception/
+├── Makefile
+├── docker-compose.yml
+├── .env                     # environment variables (optional, recommended)
+└── srcs/
+    ├── requirements/
+    │   ├── nginx/
+    │   │   ├── Dockerfile
+    │   │   ├── conf/
+    │   │   │   └── default.conf
+    │   ├── wordpress/
+    │   │   ├── Dockerfile
+    │   │   ├── tools/
+    │   │   │   └── setup.sh
+    │   ├── mariadb/
+    │   │   ├── Dockerfile
+    │   │   ├── conf/
+    │   │   │   └── my.cnf
+    │   │   ├── tools/
+    │   │   │   └── init.sql
+    ├── .env            # local env copy for compose context if needed
+    └── volumes/        # (optional) bind-mounted folders for persistent data
