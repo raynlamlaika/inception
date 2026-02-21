@@ -1,0 +1,17 @@
+
+
+services:
+  nginx:
+    build: ./requirements/nginx
+    ports:
+      - "8443:443" 
+    # volumes:
+  
+
+  
+  # mariadb:
+  # wordpress:
+
+
+
+
