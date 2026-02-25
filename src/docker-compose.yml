@@ -6,10 +6,18 @@ services:
     ports:
       - "8443:443" 
     # volumes:
-  
 
-  
-  # mariadb:
+    mariadb:
+      image: mariadb:latest
+      restart: always
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: wordpress
+        MYSQL_USER: user
+        MYSQL_PASSWORD: password
+      volumes:
+        - db_data:/var/lib/mysql
+
   # wordpress:
 
 

@@ -1,14 +1,13 @@
-NAME=inception
+NAME= inception
 
-all: up
+DB_LAB_COMPOSE=testdatabases/docker-compose.yml
 
-up:
-	docker compose -f docker-compose.yml up --build -d
+db-lab-up:
+	docker compose -f $(DB_LAB_COMPOSE) up -d
 
-down:
-	docker compose -f docker-compose.yml down
+db-lab-bench:
+	chmod +x testdatabases/scripts/bench.sh
+	./testdatabases/scripts/bench.sh
 
-clean: down
-	docker system prune -af --volumes
-
-re: clean up
+db-lab-down:
+	docker compose -f $(DB_LAB_COMPOSE) down
