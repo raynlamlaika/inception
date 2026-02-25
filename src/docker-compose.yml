@@ -1,24 +1,52 @@
-
-
 services:
   nginx:
     build: ./requirements/nginx
     ports:
-      - "8443:443" 
-    # volumes:
+      - "443:443"
+    depends_on:
+      - wordpress
+    networks:
+      - inception_net
 
-    mariadb:
-      image: mariadb:latest
-      restart: always
-      environment:
-        MYSQL_ROOT_PASSWORD: root
-        MYSQL_DATABASE: wordpress
-        MYSQL_USER: user
-        MYSQL_PASSWORD: password
-      volumes:
-        - db_data:/var/lib/mysql
+  mariadb:
+    build: ./requirements/mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - inception_net
 
-  # wordpress:
+  wordpress:
+    build: ./requirements/wordpress
+    depends_on:
+      - mariadb
+    environment:
+      SQLDB_USER: user
+      SQLDB_NAME: wordpress
+      WP_TITLE: "My Site"
+      DOMAIN_NAME: "https://localhost:443"
+      WP_ADMIN_USER: admin
+      WP_ADMIN_EMAIL: admin@example.com
+      WP_USER: author
+      WP_USER_EMAIL: author@example.com
+      WP_USER_PASSWORD: authorpass
+    volumes:
+      - wp_data:/var/www/html
+      - ./requirements/wordpress/tools:/run/secrets
+    networks:
+      - inception_net
+
+volumes:
+  db_data:
+  wp_data:
+
+networks:
+  inception_net:
 
 
 
