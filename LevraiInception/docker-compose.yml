@@ -1,0 +1,56 @@
+
+
+services:
+  wordpress:
+    build: ./srcs/wordpress
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    env_file:
+      - .env
+    networks:
+      - inception
+    volumes:
+      - wp_data:/var/www/html
+  
+  mariadb:
+    build: ./srcs/mariadb
+    container_name: mariadb
+    # This line is the magic bridge:
+    env_file:
+      - .env
+    networks:
+      - inception
+    volumes:
+      - db_data:/var/lib/mysql
+  nginx:
+    build:
+      context: ./srcs/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    depends_on:
+      - wordpress
+    ports:
+      - "8443:443"
+    cap_add:
+      - NET_BIND_SERVICE
+    volumes:
+      - wp_data:/var/www/html
+    env_file:
+      - .env
+    networks:
+      - inception
+    # restart: always
+
+
+  
+
+# THIS IS THE MISSING PART:
+# This tells Docker to CREATE the network
+networks:
+  inception:
+    driver: bridge
+
+volumes:
+  db_data:
+  wp_data:
