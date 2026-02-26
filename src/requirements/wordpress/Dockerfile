@@ -17,5 +17,5 @@ RUN chmod +x setwp.sh
 RUN mkdir -p /var/www/html
 WORKDIR /var/www/html
 
-
+# ENTRYPOINT && CMD
 ENTRYPOINT ["/setwp.sh"]

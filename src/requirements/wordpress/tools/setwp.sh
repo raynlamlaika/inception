@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SQLDB_PASS=$(cat /run/secrets/db_password)
-WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
+SQLDB_PASS=$(cat ../run/secrets/db_password)
+WP_ADMIN_PASSWORD=$(cat ../run/secrets/wp_admin_password)
 
 for i in {1..30}; do 
     if mariadb -h mariadb -u $SQLDB_USER -p$SQLDB_PASS -e "SELECT 1" >/dev/null 2>&1; then break
@@ -25,3 +25,4 @@ sed -i 's/listen = .*/listen = 0.0.0.0:9000/' /etc/php/8.2/fpm/pool.d/www.conf
 echo "wordpress is ready!"
 
 exec php-fpm8.2 -F
+
