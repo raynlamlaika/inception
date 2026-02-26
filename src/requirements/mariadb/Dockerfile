@@ -8,4 +8,6 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends mariadb-serv
 COPY conf/database.sh /database.sh
 RUN chmod +x ./database.sh
 
+
+
 ENTRYPOINT ["/database.sh"]

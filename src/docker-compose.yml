@@ -5,6 +5,8 @@ services:
       - "8443:443"
     depends_on:
       - wordpress
+    volumes:
+      - wp_data:/var/www/html
     networks:
       - inception_net
 
@@ -16,6 +18,8 @@ services:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: user
       MYSQL_PASSWORD: password
+      SQLDB_NAME: wordpress
+      SQLDB_USER: user
     volumes:
       - db_data:/var/lib/mysql
       - ./run/secrets:/run/secrets
@@ -30,7 +34,7 @@ services:
       SQLDB_USER: user
       SQLDB_NAME: wordpress
       WP_TITLE: "My Site"
-      DOMAIN_NAME: "https://localhost:443"
+      DOMAIN_NAME: "https://localhost:8443"
       WP_ADMIN_USER: admin
       WP_ADMIN_EMAIL: admin@example.com
       WP_USER: author
