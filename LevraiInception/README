@@ -1,0 +1,26 @@
+DOCKER
+Docker networking:
+the base how docker manage those is depande on some lunix core features ``here we talk about lunix the kernal``
+    Network Namespaces:
+        is base feature that provid in isolation between the containers in the networking context
+    Virtual Ethernet Devices (veth pairs):
+        is basedly used to connect tow isolated containers, usually attached to a virtual bridge.
+    iptables:
+        iptables rules (a firewall utility) to manage port to manage te port mapping and NAT, `EXPOSE`
+
+docker user deffrent networking drivers to manage every cases by the real needness
+
+
+
+first all aboiut mariadb and databases
+
+
+first the base is debian:bullseye 
+the base image of the service ``database``
+
+
+
+
+
+
+
