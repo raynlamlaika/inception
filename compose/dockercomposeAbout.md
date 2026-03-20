@@ -5,3 +5,6 @@ to set up on it database the auth service ai service ... or any other service in
 it own
 
 first this tool most set up for it the blue print of the working flow with docker-compose.yaml file most be writing in yaml format
+
+
+jahd jahd
