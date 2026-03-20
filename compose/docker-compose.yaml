@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: miniserv-db
+    environment:
+      POSTGRES_USER: bot
+      POSTGRES_PASSWORD: rayn
+      POSTGRES_DB: bot
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./website/database/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+
+  api:
+    build:
+      context: ./website/back-end
+    container_name: miniserv-api
+    environment:
+      PGHOST: db
+      PGUSER: bot
+      PGPASSWORD: rayn
+      PGDATABASE: bot
+      PGPORT: 5432
+    depends_on:
+      - db
+    ports:
+      - "1337:1337"
+  front-end:
+    build:
+      context: ./website/bottom
+    container_name: miniserv-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+volumes:
+  db-data:
+
+
+
+
+
+
+
