@@ -1,0 +1,75 @@
+here is the runing command to
+docker rm -f nginx wordpress mariadb 2>/dev/null || true
+docker network rm inception_net 2>/dev/null || true
+
+docker volume create db_data
+docker volume create wp_data
+docker network create inception_net
+
+docker build -t inception-mariadb src/requirements/mariadb
+docker build -t inception-wordpress src/requirements/wordpress
+docker build -t inception-nginx src/requirements/nginx
+
+docker run -d --name mariadb \
+  --network inception_net \
+  -v db_data:/var/lib/mysql \
+  -v "$PWD/secrets:/run/secrets:ro" \
+  -e MARIADB_ROOT_PASSWORD=rayanelam \
+  -e MARIADB_DATABASE=wordpress \
+  -e MARIADB_USER=user \
+  -e MARIADB_PASSWORD=rayanelam \
+  inception-mariadb
+
+docker run -d --name wordpress \
+  --network inception_net \
+  -v wp_data:/var/www/html \
+  -v "$PWD/secrets:/run/secrets:ro" \
+  -e MYSQL_USER=user \
+  -e MYSQL_PASSWORD=rayanelam \
+  -e MYSQL_DATABASE=wordpress \
+  -e WP_TITLE="My Site" \
+  -e DOMAIN_NAME="https://127.0.0.1:8443" \
+  -e WP_ADMIN_USER=admin \
+  -e WP_ADMIN_EMAIL=admin@example.com \
+  -e WP_USER=author \
+  -e WP_USER_EMAIL=author@example.com \
+  -e WP_USER_PASSWORD=rayanelam \
+  inception-wordpress
+
+docker run -d --name nginx \
+  --network inception_net \
+  -p 8443:443 \
+  -v wp_data:/var/www/html \
+  inception-nginx
+
+this is the work that we need to do every time without docker-compose
+creating the volumes, network connect containers ...
+dockercompose.yaml make it easy on us cu he manage all of that
+
+
+
+mistakes that broke the servers:
+1. using a bad base image name in the nginx Dockerfile (`debain` instead of `debian`)
+2. exposing the wrong nginx port (`80` while the server listens on `443`)
+3. putting the nginx server block in the wrong file at first (`nginx.conf` instead of a vhost file in `conf.d/default.conf`)
+4. starting nginx with a WordPress upstream that was not reachable from a plain `docker run` setup
+5. using the wrong hostname in WordPress and nginx (`localhost` vs `127.0.0.1`)
+6. storing WordPress site URLs that did not match the browser URL, which caused redirect loops
+7. not quoting `WP_TITLE` in the WordPress install command, so `My Site` broke the install
+8. reusing old containers, networks, and volumes without cleaning them first
+9. forgetting to mount and read the secret files from `/run/secrets`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
