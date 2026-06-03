@@ -33,6 +33,9 @@
     first we start with the config setup
     we create server for stack to hold our routes and protocols ports ...
     first we specify the port that we gonna listen from : listen 443 ssl; listen [::]:443 ssl;
+    first one for just the binding of the port in normal way that it suppert the ipv4 the second one it support ip v6
+
+    
 
 
 
