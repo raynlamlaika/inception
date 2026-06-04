@@ -78,12 +78,14 @@ This checks for a static file or directory under the `root` (`/var/www/html`) an
 
 WordPress runs under PHP-FPM. Nginx forwards `.php` requests to the PHP-FPM service (configured in `fastcgi_pass`). Ensure the PHP service is reachable (for example via Docker service name `wordpress` on port `9000`).
 wordpress depand on the database MARIADB so after the varibles setup next is  the loop waiting for the mariadb server
-```for i in {1..30}; do 
+```
+for i in {1..30}; do 
     if mariadb -h mariadb -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SELECT 1" >/dev/null 2>&1; then break
     fi
         echo "[$i/30] ... waiting for mariadb"
         sleep 2
-done```
+done 
+```
 
 after that we set up:
   check the downloading of the wp core into working directory:`/var/www/html`
