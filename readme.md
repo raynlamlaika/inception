@@ -34,6 +34,21 @@
     we create server for stack to hold our routes and protocols ports ...
     first we specify the port that we gonna listen from : listen 443 ssl; listen [::]:443 ssl;
     first one for just the binding of the port in normal way that it suppert the ipv4 the second one it support ip v6
+    i will explaine the netwoprking stuff and the protocols used iin the next parties
+
+    net we set up the routes :
+    / the main root 
+    `    location /
+    {
+        try_files $uri $uri/ /index.php?$args; # try_files checks each item in order and uses the first that exists; the last argument is a fallback internal rewrite.
+    }`
+
+
+
+
+# Last service before the next big points is the WordPress
+
+
 
     
 
@@ -43,5 +58,54 @@
 
 
 
-    
+
+# The protocols and the networking 
+
+
+
+
+
+
+
+# Dockerfile
+
+
+
+
+
+
+
+
+# Docker-compose
+
+
+
+
+
+
+
+
+
+
+
+# the .env /secrets & How to run
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Keberntes right aproch
         
