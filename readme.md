@@ -1,111 +1,97 @@
 ## INCEPTION
 
+### Overview
 
+This repository contains the basic services for a minimal WordPress stack: a MariaDB database, an Nginx web server, and WordPress (PHP). The following sections walk through each service and the configuration used to run them in containers.
 
-# First let's walk step by step into the BASE of every service
-    -- DATABASE
-    -first is the ``MARIABD DATABASE`` the set of the DATABASE
-    as first step is the installation of mariadb ofc:
-    <apt-get update && apt-get install -y mariadb-server mariadb-client>
-        - `mariadb-server`: The MariaDB server package. This installs the database daemon (usually `mysqld`) which stores your databases, listens on port 3306 by default, and should run where the database will reside (for example in a dedicated database container). After installation, run the secure setup and create the initial users and databases.
-        - `mariadb-client`: The MariaDB client package. This provides command-line tools (like the `mysql` client) used to connect to a MariaDB/MySQL server. Install this on application containers or admin hosts that need to connect to the database. Example usage: `mysql -u root -p -h <db-host>`
-    Next is start script to set-up:
-        firs: we taking the envermment varibles:
-            `MYSQL_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)`
-            `MYSQL_PASSWORD=$(cat /run/secrets/db_password)`
-            `MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}`
-            `MYSQL_USER=${MYSQL_USER:-wordpress}`
-            for the data base this this the needed varibles: MYSQL_ROOT_PASSWORD, MYSQL_PASSWORD,MYSQL_DATABASE, MYSQL_USER
-        next: we start mariadb in the background
-            service mariadb start | we can use sysctl of user base support it
-        service it takes service <name> start|stop|restart|status|reload
-        we use service to manage the strat stop ... of the deamon of mariadb that he gonna run in the background
-        after the start we wait for connection to connect with mariadb
-            ```until mysqladmin -u root ping >/dev/null 2>&1 || { [ -n "$MYSQL_ROOT_PASSWORD" ] && mysqladmin -u root -p"$MYSQL_ROOT_PASSWORD" ping >/dev/null 2>&1; }; do```
+---
 
+### Database (MariaDB)
 
+First we set up the MariaDB database. The typical installation command is:
 
+```bash
+apt-get update && apt-get install -y mariadb-server mariadb-client
+```
 
+- `mariadb-server`: Installs the MariaDB server daemon (usually `mysqld`). This stores databases and listens on port 3306 by default. Run the secure setup and create initial users/databases after installation.
+- `mariadb-client`: Installs client tools such as the `mysql` CLI used to connect to a MariaDB/MySQL server. Use it from application containers or admin hosts as needed:
 
+```bash
+mysql -u root -p -h <db-host>
+```
 
-# Next let's walk in nginx who gonna serve our wordpress in next
-    -- LOADBALANCER
-    first we start with the config setup
-    we create server for stack to hold our routes and protocols ports ...
-    first we specify the port that we gonna listen from : listen 443 ssl; listen [::]:443 ssl;
-    first one for just the binding of the port in normal way that it suppert the ipv4 the second one it support ip v6
-    i will explaine the netwoprking stuff and the protocols used iin the next parties
+Startup script notes (what the container's init script reads):
 
-    net we set up the routes :
-    / the main root 
-    `    location /
-    {
-        try_files $uri $uri/ /index.php?$args; # try_files checks each item in order and uses the first that exists; the last argument is a fallback internal rewrite.
-    }`
+- Read secrets / environment variables:
 
+```bash
+MYSQL_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+MYSQL_PASSWORD=$(cat /run/secrets/db_password)
+MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
+MYSQL_USER=${MYSQL_USER:-wordpress}
+```
 
+- Required variables for the database: `MYSQL_ROOT_PASSWORD`, `MYSQL_PASSWORD`, `MYSQL_DATABASE`, `MYSQL_USER`.
 
+- The script starts MariaDB in the background so it can run initialization SQL (create database, users, grant privileges):
 
-# Last service before the next big points is the WordPress
+```bash
+service mariadb start
+```
 
+- The script waits for the server to accept connections before running SQL. Example wait loop used in the script:
 
+```bash
+until mysqladmin -u root ping >/dev/null 2>&1 || { [ -n "$MYSQL_ROOT_PASSWORD" ] && mysqladmin -u root -p"$MYSQL_ROOT_PASSWORD" ping >/dev/null 2>&1; }; do
+  echo "Waiting for MariaDB..."
+  sleep 2
+done
+```
 
-    
+---
 
+### Nginx (load balancer / web server)
 
+Nginx serves static files and forwards PHP requests to PHP-FPM (WordPress). The server listens on HTTPS:
 
+```nginx
+listen 443 ssl;
+listen [::]:443 ssl;
+```
 
+- The first `listen` binds IPv4; the second enables IPv6.
 
+Routing example (root location):
 
+```nginx
+location / {
+    try_files $uri $uri/ /index.php?$args;
+}
+```
 
+This checks for a static file or directory under the `root` (`/var/www/html`) and falls back to `index.php` (front controller) if none exists. This is the common pattern used by WordPress and many PHP frameworks.
 
-# The protocols and the networking 
+---
 
+### PHP / WordPress
 
+WordPress runs under PHP-FPM. Nginx forwards `.php` requests to the PHP-FPM service (configured in `fastcgi_pass`). Ensure the PHP service is reachable (for example via Docker service name `wordpress` on port `9000`).
 
+---
 
+### Networking, Dockerfiles, and Compose
 
+See the `docker-compose.yml` for service wiring (volumes, networks, and secrets). The compose file defines secrets that map host files into `/run/secrets` inside containers.
 
+---
 
-# Dockerfile
+### Secrets and How to Run
 
+Secrets are expected as files referenced by `docker-compose.yml` and are mounted in containers at `/run/secrets/<name>`. Create the secret files on the host before `docker-compose up` (or change the compose paths to match where your secrets live).
 
+---
 
+### Kubernetes (notes)
 
-
-
-
-
-# Docker-compose
-
-
-
-
-
-
-
-
-
-
-
-# the .env /secrets & How to run
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Keberntes right aproch
-        
+This project can be adapted to Kubernetes. Use Secrets for credentials and configure Services/Ingress for nginx and WordPress.
