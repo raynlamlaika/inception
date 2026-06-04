@@ -77,12 +77,53 @@ This checks for a static file or directory under the `root` (`/var/www/html`) an
 ### PHP / WordPress
 
 WordPress runs under PHP-FPM. Nginx forwards `.php` requests to the PHP-FPM service (configured in `fastcgi_pass`). Ensure the PHP service is reachable (for example via Docker service name `wordpress` on port `9000`).
+wordpress depand on the database MARIADB so after the varibles setup next is  the loop waiting for the mariadb server
+```for i in {1..30}; do 
+    if mariadb -h mariadb -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SELECT 1" >/dev/null 2>&1; then break
+    fi
+        echo "[$i/30] ... waiting for mariadb"
+        sleep 2
+done```
+
+after that we set up:
+  check the downloading of the wp core into working directory:`/var/www/html`
+  net is creating the database connection :
+  Creates wp-config.php with database connection settings.
+  --dbname: DB name
+  --dbuser: DB username
+  --dbpass: DB password
+  --dbhost="mariadb": hostname of your MariaDB service on the Docker network (service name).
+  next change the owner ship for the files recsvly for the folder: chown -R www-data:www-data /var/www/html
+  next is the chmoud for the access
+
+
 
 ---
 
 ### Networking, Dockerfiles, and Compose
 
-See the `docker-compose.yml` for service wiring (volumes, networks, and secrets). The compose file defines secrets that map host files into `/run/secrets` inside containers.
+Every dockerfile start with the base in my case i user ``Debain:bullseye`` it used as a template for our contrainer
+that it will hold up the packages that  we need to install and copy into it the scripts that we need to run we cna also create from it 
+some dependencies
+common keyword used:
+  FROM:
+  RUN:
+  CMD:
+  EXPOSE:
+  ENTRYPOINT:
+  ENV:
+  WORKDIR:
+  ARG:
+  VOLUME:
+
+  ## Type of volumes
+  named volumes:
+  anonymose volumes:
+  ## Type of binds
+  Bind Mounts:
+  tmpfs Mounts:
+
+
 
 ---
 
