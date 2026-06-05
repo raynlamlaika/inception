@@ -108,15 +108,15 @@ Every dockerfile start with the base in my case i user ``Debain:bullseye`` it us
 that it will hold up the packages that  we need to install and copy into it the scripts that we need to run we cna also create from it 
 some dependencies
 common keyword used:
-  FROM:
-  RUN:
-  CMD:
-  EXPOSE:
-  ENTRYPOINT:
-  ENV:
-  WORKDIR:
-  ARG:
-  VOLUME:
+  FROM: Base image for the build stage `FROM debian:bullseye` Supports AS for named stages in multi-stage builds. Every Dockerfile (build stage) starts from a FROM.
+  RUN:Executes a commands at the build time it can take to forms `RUN command` or `RUN ["exec", "args", ".."]`
+  CMD:Same as RUN but the mean deffrent is that we can overwrite on it from the cli `docker run <command>` out of run it can't be overwriten(on the last CMD of there is multiple CMD stages)
+  EXPOSE:Let the container DOCUMMENT that i will listen on specifed port 'to make it realy listen we user `docker -p 80`' or `docker run -P`
+  ENTRYPOINT:Sets the working directory for subsequent instructions and for the running container
+  ENV:Defines environment variables
+  WORKDIR:Sets the working directory for subsequent instructions and for the running container
+  ARG:Declares build-time variables 
+  VOLUME:Declares mount points for external storage and marks data as stored outside the image
 
   ## Type of volumes
   named volumes:
