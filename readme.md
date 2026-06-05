@@ -126,6 +126,9 @@ common keyword used:
   tmpfs Mounts:
 
 
+## About docker compose
+the mean deficulty we gonna have without dockercompose.yml is first readablty of the projcet `we can't figureout the ports used for every service and network of it ...` docker compose is in way where u can set up the arch of your project and in the mean big work it automatique the work for me as developer first in he network set up and making the contianer talk with each other, creating volumes, setuping the secrets
+
 
 ---
 
@@ -138,3 +141,4 @@ Secrets are expected as files referenced by `docker-compose.yml` and are mounted
 ### Kubernetes (notes)
 
 This project can be adapted to Kubernetes. Use Secrets for credentials and configure Services/Ingress for nginx and WordPress.
+Declares mount points for external storage and marks data as stored outside the image
