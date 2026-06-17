@@ -1,8 +1,4 @@
-
-
-
-
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update 
 RUN apt-get install -y php7.4-fpm php7.4-mysql curl mariadb-client

@@ -3,7 +3,7 @@
 # definition of image it represents the template for the container we want to create
 # why the docker file keywords are in uppercase?
 # the keywords in a Dockerfile are typically written in uppercase to distinguish them from other text and to improve readability.
-FROM debian:bullseye
+FROM debian:bookworm
 
 
 
