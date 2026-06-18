@@ -6,23 +6,28 @@
 
 if [ -f /run/secrets/db_root_password ]; then
     MYSQL_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+else
+    MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
 fi
 
 if [ -f /run/secrets/db_password ]; then
     MYSQL_PASSWORD=$(cat /run/secrets/db_password)
+else
+    MYSQL_PASSWORD=${MYSQL_PASSWORD:-wordpress}
 fi
 
-# MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
-# MYSQL_USER=${MYSQL_USER:-wordpress}
+MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
+MYSQL_USER=${MYSQL_USER:-wordpress}
 
 # service mariadb start is used to start the mariadb service in the container. This allows us to run the mysql commands to set up the database and user.
 service mariadb start
+echo "Waiting for MariaDB to start..."
 # until mysqladmin -u root ping > /dev/null 2>&1 || mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping > /dev/null 2>&1; do
-# until mysqladmin -u root ping >/dev/null 2>&1 || { [ -n "$MYSQL_ROOT_PASSWORD" ] && mysqladmin -u root -p"$MYSQL_ROOT_PASSWORD" ping >/dev/null 2>&1; }; do
-
-#     echo "Waiting for MariaDB..."
-#     sleep 2
-# done
+until mysql -u root -e "SELECT 1" >/dev/null 2>&1
+do
+    echo "Waiting for MariaDB..."
+    sleep 2
+done
 
 
 

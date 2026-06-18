@@ -43,12 +43,12 @@ if [ "${DOMAIN_NAME}" != "https://127.0.0.1:8443/" ]; then
 fi
 
 
-sed -i 's/listen = .*/listen = 0.0.0.0:9000/' /etc/php/7.4/fpm/pool.d/www.conf
+# sed -i 's/listen = .*/listen = 0.0.0.0:9000/' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i 's|listen = .*|listen = 0.0.0.0:9000|' $(find /etc/php -path "*/fpm/pool.d/www.conf")
 
 mkdir -p /run/php #check why
 
 
 echo "wordpress is ready!"
 
-exec php-fpm7.4 -F
-
+exec php-fpm8.2 -F
