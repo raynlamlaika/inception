@@ -1,24 +1,24 @@
 #!/bin/bash
 
-if [ -f /run/secrets/db_password ]; then
+if [ -s /run/secrets/db_password ] && [ -s /run/secrets/wp_admin_password ] && [ -s /run/secrets/wp_password ]; then
     MYSQL_PASSWORD=$(cat /run/secrets/db_password)
-fi
-
-if [ -f /run/secrets/wp_admin_password ]; then
     WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
-fi
-
-if [ -f /run/secrets/wp_password ]; then
     WP_USER_PASSWORD=$(cat /run/secrets/wp_password)
 fi
 
-#waiting for the database to be ready before starting wordpress setup
 for i in {1..30}; do 
-    if mariadb -h mariadb -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SELECT 1" >/dev/null 2>&1; then break
+    if mariadb -h mariadb -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SELECT 1" >/dev/null 2>&1; then 
+        MARIA_DB_READY=true
+        break
     fi
         echo "[$i/30] ... waiting for mariadb"
         sleep 2
+        if [ $i -eq 30 ]; then
+            echo "MariaDB is not ready after 30 attempts. Exiting."
+            exit 1
+        fi
 done
+
 echo "mariadb is ready!"
 
 # if the wp-config.php file does not exist, we will set up wordpress. This is done to ensure that we only set up wordpress once and not every time the container starts.
@@ -37,10 +37,10 @@ fi
 wp option update home "${DOMAIN_NAME}" --allow-root
 wp option update siteurl "${DOMAIN_NAME}" --allow-root
 
-if [ "${DOMAIN_NAME}" != "https://127.0.0.1:8443/" ]; then
-    wp option update home "https://127.0.0.1:8443/" --allow-root
-    wp option update siteurl "https://127.0.0.1:8443/" --allow-root
-fi
+# if [ "${DOMAIN_NAME}" != "https://127.0.0.1:8443/" ]; then
+#     wp option update home "https://127.0.0.1:8443/" --allow-root
+#     wp option update siteurl "https://127.0.0.1:8443/" --allow-root
+# fi
 
 
 # sed -i 's/listen = .*/listen = 0.0.0.0:9000/' /etc/php/8.2/fpm/pool.d/www.conf

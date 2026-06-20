@@ -4,13 +4,7 @@
 # RUN apt-get install -y php7.4-fpm php7.4-mysql curl mariadb-client
 FROM debian:bookworm
 
-RUN apt-get update && \
-    apt-get install -y \
-    php-fpm \
-    php-mysql \
-    curl \
-    mariadb-client && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl php-fpm php-mysql mariadb-client && rm -rf /var/lib/apt/lists/*
 RUN apt-get install -y php8.2-fpm php8.2-mysql
 # RUN rm -rf /var/lib/apt/lists/*
 
@@ -43,5 +37,3 @@ WORKDIR /var/www/html
 EXPOSE 80
 # this command is used to specify that the container will listen on port 80 at runtime,
 ENTRYPOINT ["/setwp.sh"]
-
-
