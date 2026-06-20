@@ -16,14 +16,12 @@ services: # this is where we define the services that we want to run in our appl
       - wp_data:/var/www/html # this mounts the wp_data volume to /var/www/html in the container, so any changes made to the files in /var/www/html will be persisted in the wp_data volume
     networks:
       - inception_net # this specifies that the nginx service is connected to the inception_net network
+    container_name: nginx
   mariadb:
     build: ./requirements/mariadb
     image: inception-mariadb:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    env_file:
+      - .env
     volumes:
       - mariadb_data:/var/lib/mysql
     secrets:
@@ -31,19 +29,12 @@ services: # this is where we define the services that we want to run in our appl
       - db_password
     networks:
       - inception_net
+    container_name: mariadb
   wordpress:
     build: ./requirements/wordpress # this specifies the path to the Dockerfile that we want to use to build the image for this service, if we didnt specify this it would use the image specified in the image field
     image: inception-wordpress:latest
-    environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      WP_TITLE: ${WP_TITLE}
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      WP_ADMIN_USER: ${WP_ADMIN_USER}
-      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
-      WP_USER: ${WP_USER}
-      WP_USER_EMAIL: ${WP_USER_EMAIL}
+    env_file:
+      - .env
     volumes:
       - wp_data:/var/www/html
     secrets:
@@ -52,6 +43,7 @@ services: # this is where we define the services that we want to run in our appl
       - wp_admin_password
     networks:
       - inception_net
+    container_name: wordpress
 
 
 
@@ -72,3 +64,6 @@ secrets:
 networks:
   inception_net: #brige allready by default but we can specify it to be more clea4r
     driver: bridge
+
+
+# add the nmae t

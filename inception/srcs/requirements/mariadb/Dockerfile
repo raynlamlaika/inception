@@ -35,9 +35,13 @@ RUN chmod +x /usr/local/bin/setup.sh
 
 
 EXPOSE 3306
+
+# EXPOSE 1210
 # the expose command is used to specify that the container will listen on a specific port at runtime
 
+
 ENTRYPOINT ["/usr/local/bin/setup.sh"]
+
 
 
 
