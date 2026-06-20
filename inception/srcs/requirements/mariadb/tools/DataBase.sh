@@ -23,12 +23,20 @@ MYSQL_USER=${MYSQL_USER:-wordpress}
 service mariadb start
 echo "Waiting for MariaDB to start..."
 # until mysqladmin -u root ping > /dev/null 2>&1 || mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping > /dev/null 2>&1; do
-until mysql -u root -e "SELECT 1" >/dev/null 2>&1
-do
-    echo "Waiting for MariaDB..."
-    sleep 2
-done
+DATABASE_READY=false
 
+for i in {1..30}; do 
+    if mysqladmin -u root ping > /dev/null 2>&1 || mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping > /dev/null 2>&1; then 
+        DATABASE_READY=true
+        break
+    fi
+        echo "[$i/30] ... waiting for mariadb"
+        sleep 2
+        if [ $i -eq 30 ]; then
+            echo "MariaDB is not ready after 30 attempts. Exiting."
+            exit 1
+        fi
+done
 
 
 if mysql -u root -e "SELECT 1;" > /dev/null 2>&1; then
@@ -45,8 +53,8 @@ else
     mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
     mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;"
 fi
-mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown # after setting up the database and user, we will shut down the mariadb service to start it again in the foreground.
 
+mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown # after setting up the database and user, we will shut down the mariadb service to start it again in the foreground.
 
 # finally, we will start the mariadb service in the foreground so that it continues to run and accept connections from other containers.
 echo "MariaDB is ready. Starting in foreground..."
