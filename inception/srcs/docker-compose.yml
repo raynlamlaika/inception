@@ -46,11 +46,21 @@ services: # this is where we define the services that we want to run in our appl
     container_name: wordpress
 
 
-
-volumes: # this is where we define the volumes that we want to use in our application
+#the type of those volumes is named volume, which means that they are managed by Docker and can be shared between containers.
+volumes:
   wp_data: # this is the name of the volume that we want to use for the wordpress service
+    driver: local # this specifies that we want to use the local driver for our volumes, which means that the volumes will be stored on the local filesystem of the host machine
+    driver_opts: # this is where we can specify options for the driver that we are using for our volumes
+    type: none # this specifies that we want to use the none type for our volumes, which means that the volumes will not be managed by Docker and will not be shared between containers
+    device: /home/rlamlaik/data/wp_data/ # this specifies the path to the directory on the host machine that we want to use for our volumes
+    o: bind # this specifies that we want to use the bind option for our volumes, which means that the volumes will be mounted as a bind mount, which allows us to share files between the host machine and the containers
+  # this is the name of the volume that we want to use for the wordpress service
   mariadb_data: # this is the name of the volume that we want to use for the mariadb service
-
+    driver: local # this specifies that we want to use the local driver for our volumes, which means that the volumes will be stored on the local filesystem of the host machine
+    driver_opts: # this is where we can specify options for the driver that we are using for our volumes
+    type: none # this specifies that we want to use the none type for our volumes,
+    o: bind # this specifies that we want to use the bind option for our volumes, which means that the volumes will be mounted as a bind mount, which allows us to share files between the host machine and the containers
+    dievice: /home/rlamlaik/data/mariadb_data/ # this specifies the path to the directory on the host machine that we want to use for our volumes
 secrets:
   db_root_password:
     file: ../secrets/db_root_password
