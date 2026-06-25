@@ -19,6 +19,10 @@ fi
 MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
 MYSQL_USER=${MYSQL_USER:-wordpress}
 
+if [ ! -d /var/lib/mysql/mysql ]; then
+    mariadb-install-db --user=mysql --datadir=/var/lib/mysql > /dev/null
+fi
+
 # service mariadb start is used to start the mariadb service in the container. This allows us to run the mysql commands to set up the database and user.
 service mariadb start
 echo "Waiting for MariaDB to start..."
@@ -65,7 +69,7 @@ mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown # after setting up the data
 
 # finally, we will start the mariadb service in the foreground so that it continues to run and accept connections from other containers.
 echo "MariaDB is ready. Starting in foreground..."
-exec mariadbd-safe --bind-address=0.0.0.0 #---port 1210 # the exec command is used to replace the current shell process with the mariadbd-safe process. This allows the container to run the mariadb service in the foreground and keep it running as long as the container is running. The --bind-address=
+exec mysqld_safe --bind-address=0.0.0.0 #---port 1210 # the exec command is used to replace the current shell process with the mysqld_safe process. This allows the container to run the mariadb service in the foreground and keep it running as long as the container is running. The --bind-address=
 
 
 

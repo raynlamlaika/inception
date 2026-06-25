@@ -1,4 +1,3 @@
-
 WP_VOLUME = /home/rlamlaik/data/wp_data
 MARIADB_VOLUME = /home/rlamlaik/data/mariadb_data
 
