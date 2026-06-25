@@ -52,3 +52,4 @@ mkdir -p /run/php #check why
 echo "wordpress is ready!"
 
 exec php-fpm8.2 -F
+

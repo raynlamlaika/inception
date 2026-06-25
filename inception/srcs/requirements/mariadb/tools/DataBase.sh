@@ -44,28 +44,6 @@ done
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if mysql -u root -e "SELECT 1;" > /dev/null 2>&1; then
     # if the root user does not have a password, we will set it up and create the database and user.
     mysql -u root -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
@@ -88,6 +66,7 @@ mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown # after setting up the data
 # finally, we will start the mariadb service in the foreground so that it continues to run and accept connections from other containers.
 echo "MariaDB is ready. Starting in foreground..."
 exec mariadbd-safe --bind-address=0.0.0.0 #---port 1210 # the exec command is used to replace the current shell process with the mariadbd-safe process. This allows the container to run the mariadb service in the foreground and keep it running as long as the container is running. The --bind-address=
+
 
 
 

@@ -10,6 +10,7 @@ services: # this is where we define the services that we want to run in our appl
     build: ./requirements/nginx # this specifies the path to the Dockerfile that we want to use to build the image for this service
     ports:
       - "443:443" # this maps port 8443 on the host to port 443 on the container
+    image: nginx:incp
     depends_on:
       - wordpress # this specifies that the nginx service depends on the wordpress service, so it will wait for the wordpress service to be up and running before starting
     volumes:
@@ -19,7 +20,7 @@ services: # this is where we define the services that we want to run in our appl
     container_name: nginx
   mariadb:
     build: ./requirements/mariadb
-    image: inception-mariadb:latest
+    image: mariadb:incp
     env_file:
       - .env
     volumes:
@@ -32,7 +33,7 @@ services: # this is where we define the services that we want to run in our appl
     container_name: mariadb
   wordpress:
     build: ./requirements/wordpress # this specifies the path to the Dockerfile that we want to use to build the image for this service, if we didnt specify this it would use the image specified in the image field
-    image: inception-wordpress:latest
+    image: wordpress:incp
     env_file:
       - .env
     volumes:
@@ -53,14 +54,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/osboxes/data/wp_data
+      device: /home/rlamlaik/data/wp_data
 
   mariadb_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/osboxes/data/mariadb_data
+      device: /home/rlamlaik/data/mariadb_data
 #the type of those volumes is named volume, which means that they are managed by Docker and can be shared between containers.
 # volumes:
 #   wp_data: # this is the name of the volume that we want to use for the wordpress service
