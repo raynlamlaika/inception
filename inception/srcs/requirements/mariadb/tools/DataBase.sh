@@ -19,49 +19,53 @@ fi
 MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
 MYSQL_USER=${MYSQL_USER:-wordpress}
 
-if [ ! -d /var/lib/mysql/mysql ]; then
-    mariadb-install-db --user=mysql --datadir=/var/lib/mysql > /dev/null
-fi
+# if [ ! -d /var/lib/mysql/mysql ]; then
+#     mariadb-install-db --user=mysql --datadir=/var/lib/mysql > /dev/null
+# fi
 
 # service mariadb start is used to start the mariadb service in the container. This allows us to run the mysql commands to set up the database and user.
 service mariadb start
+sleep 3
 echo "Waiting for MariaDB to start..."
-# until mysqladmin -u root ping > /dev/null 2>&1 || mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping > /dev/null 2>&1; do
-DATABASE_READY=false
+# # until mysqladmin -u root ping > /dev/null 2>&1 || mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping > /dev/null 2>&1; do
+# DATABASE_READY=false
 
-for i in {1..30}; do 
-    if mysqladmin -u root ping > /dev/null 2>&1 || mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping > /dev/null 2>&1; then 
-        DATABASE_READY=true
-        break
-    fi
-        echo "[$i/30] ... waiting for mariadb"
-        sleep 2
-        if [ $i -eq 30 ]; then
-            echo "MariaDB is not ready after 30 attempts. Exiting."
-            exit 1
-        fi
-done
-
-
+# for i in {1..30}; do 
+#     if mysqladmin -u root ping > /dev/null 2>&1 || mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} ping > /dev/null 2>&1; then 
+#         DATABASE_READY=true
+#         break
+#     fi
+#         echo "[$i/30] ... waiting for mariadb"
+#         sleep 2
+#         if [ $i -eq 30 ]; then
+#             echo "MariaDB is not ready after 30 attempts. Exiting."
+#             exit 1
+#         fi
+# done
 
 
 
+mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
+mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
+mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;"
 
 
-if mysql -u root -e "SELECT 1;" > /dev/null 2>&1; then
-    # if the root user does not have a password, we will set it up and create the database and user.
-    mysql -u root -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
-    mysql -u root -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';" #  the % is equivalent to localhost, it means that the user can connect from any host. This is necessary because the wordpress container will be connecting to the mariadb container from a different host.
-    mysql -u root -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
-    mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
-    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;" # the flush privileges command is used to reload the privileges from the grant tables in the mysql database. This is necessary after making changes to the user accounts or permissions to ensure that the changes take effect immediately.
-else
-    # if the root user already has a password, we will use it to create the database and user.
-    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
-    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
-    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
-    mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;"
-fi
+
+# if mysql -u root -e "SELECT 1;" > /dev/null 2>&1; then
+#     # if the root user does not have a password, we will set it up and create the database and user.
+#     mysql -u root -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
+#     mysql -u root -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';" #  the % is equivalent to localhost, it means that the user can connect from any host. This is necessary because the wordpress container will be connecting to the mariadb container from a different host.
+#     mysql -u root -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
+#     mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
+#     mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;" # the flush privileges command is used to reload the privileges from the grant tables in the mysql database. This is necessary after making changes to the user accounts or permissions to ensure that the changes take effect immediately.
+# else
+#     # if the root user already has a password, we will use it to create the database and user.
+#     mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
+#     mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+#     mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
+#     mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "FLUSH PRIVILEGES;"
+# fi
 
 
 

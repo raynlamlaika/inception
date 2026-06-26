@@ -9,7 +9,7 @@ services: # this is where we define the services that we want to run in our appl
   nginx: #on every service we can define ports, volumes, environment variables, and other settings
     build: ./requirements/nginx # this specifies the path to the Dockerfile that we want to use to build the image for this service
     ports:
-      - "443:443" # this maps port 8443 on the host to port 443 on the container
+      - "8443:443" # this maps port 8443 on the host to port 443 on the container
     image: nginx:incp
     depends_on:
       - wordpress # this specifies that the nginx service depends on the wordpress service, so it will wait for the wordpress service to be up and running before starting
@@ -45,6 +45,8 @@ services: # this is where we define the services that we want to run in our appl
     networks:
       - inception_net
     container_name: wordpress
+    depends_on:
+      - mariadb
 
 
 
